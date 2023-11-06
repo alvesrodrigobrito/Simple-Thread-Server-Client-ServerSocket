@@ -1,7 +1,9 @@
 package com.example.cliente;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ClientesTarefa {
     private static final int PORT_SERVER = 30051;
@@ -11,7 +13,15 @@ public class ClientesTarefa {
 
         Socket socket = new Socket(ADDRESS, PORT_SERVER);
         System.out.println("Conexão estabelecida");
-        socket.close();
 
+        PrintStream saida = new PrintStream(socket.getOutputStream());
+        saida.println("Comando1");
+
+        Scanner scan = new Scanner(System.in);
+        scan.nextLine();
+
+        scan.close();
+        saida.close();
+        socket.close();
     }
 }
