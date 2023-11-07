@@ -14,14 +14,45 @@ public class ClientesTarefa {
         Socket socket = new Socket(ADDRESS, PORT_SERVER);
         System.out.println("Conexão estabelecida");
 
-        PrintStream saida = new PrintStream(socket.getOutputStream());
-        saida.println("Comando1");
+        Thread threadEnviaComando = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PrintStream saida = new PrintStream(socket.getOutputStream());
+                    System.out.println("Digite os comandos:");
+                    Scanner scan = new Scanner(System.in);
+                    while (scan.hasNextLine()) {
+                        String linha = scan.nextLine();
+                        if(linha.trim().equals("")){
+                            break;
+                        }
+                        saida.println(linha);
+                    }
+                    scan.close();
+                    saida.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
-        Scanner scan = new Scanner(System.in);
-        scan.nextLine();
+        Thread threadRecebeRetornoComando = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Scanner responseServer = new Scanner(socket.getInputStream());
+                    System.out.println("Resposta do servidor:");
+                    while (responseServer.hasNextLine()){
+                        String linha = responseServer.nextLine();
+                        System.out.println(linha);
+                    }
+                    responseServer.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
-        scan.close();
-        saida.close();
         socket.close();
     }
 }
