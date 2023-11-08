@@ -41,10 +41,10 @@ public class ClientesTarefa {
             public void run() {
                 try {
                     Scanner responseServer = new Scanner(socket.getInputStream());
-                    System.out.println("Resposta do servidor:");
+
                     while (responseServer.hasNextLine()){
                         String linha = responseServer.nextLine();
-                        System.out.println(linha);
+                        System.out.println("Resposta do servidor: " + linha);
                     }
                     responseServer.close();
                 } catch (IOException e) {
@@ -53,6 +53,15 @@ public class ClientesTarefa {
             }
         });
 
+        threadRecebeRetornoComando.start();
+        threadEnviaComando.start();
+
+        try {
+            threadEnviaComando.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Fechando conexão com servidor");
         socket.close();
     }
 }
